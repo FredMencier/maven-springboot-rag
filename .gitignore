@@ -1,0 +1,38 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+*.log
+.maven-jws
+.m2/
+
+# Environment & Secrets
+.env
+*.env
+set_jj_env.sh
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Spring Boot
+application-dev.properties
+application-local.properties
+
+# Project-specific
+*.pid
+*.seed
+

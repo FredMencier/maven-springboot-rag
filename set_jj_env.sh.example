@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# JudoJourney RAG Configuration
+# Script pour définir les variables d'environnement
+
+# API Key (remplacez par votre clé réelle)
+export API_KEY="your_api_key_here"
+
+echo "✅ JudoJourney environment variables loaded:"
+echo "   API_KEY: ****" # affiche * pour la sécurité
