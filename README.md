@@ -2,7 +2,27 @@
 
 ## JudoJourney RAG
 
+Cette application est un système de Retrieval Augmented Generation (RAG) dédié aux techniques de Judo. Elle permet aux utilisateurs de poser des questions en langage naturel sur diverses techniques de Judo (comme les projections, les immobilisations, les étranglements, etc.) et obtient des réponses précises en s'appuyant sur une base de connaissances structurée. Le système utilise un modèle de langage à grande échelle (LLM) pour générer des réponses contextuelles, enrichi par la récupération d'informations pertinentes depuis une base de données vectorielle contenant les détails des techniques de Judo.
 
+## Description technique de l'application
+
+L'application JudoJourney RAG est construite avec les technologies suivantes :
+
+- **Framework backend** : Spring Boot 4.1.x pour la création d'une API REST robuste
+- **Modèle de langage** : Intégration avec des LLM via l'API Kilo.ai (support pour Claude Sonnet, Nemotron, etc.)
+- **Modèle d'embedding** : text-embedding-3-small pour la vectorisation des techniques de Judo
+- **Base de données vectorielle** : Stockage des embeddings pour la recherche sémantique efficace
+- **Architecture RAG** :
+  1. Réception de la question utilisateur en langage naturel
+  2. Vectorisation de la question via le modèle d'embedding
+  3. Recherche de similarité dans la base de données vectorielle pour trouver les techniques les plus pertinentes
+  4. Augmentation du prompt avec le contexte récupéré
+  5. Génération de la réponse par le LLM en utilisant le contexte enrichi
+  6. Retour de la réponse structurée à l'utilisateur
+
+Les données des techniques de Judo sont stockées dans le fichier `techniques.md` et sont traitées lors du démarrage de l'application pour créer la base de connaissances vectorielle.
+
+L'API expose un endpoint POST `/JudoJourney/ask` qui accepte une question en français et retourne une réponse détaillée sur les techniques de Judo.
 
 
 ### 🚀 Quick Start
