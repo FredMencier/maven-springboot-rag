@@ -1,6 +1,5 @@
 package org.heg.rest;
 
-import org.heg.dto.TechniquesResponse;
 import org.heg.service.JJChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

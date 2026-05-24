@@ -60,6 +60,5 @@ public class JJChatService {
                     .onError(emitter::error)
                     .start();
         });
-
     }
 }
