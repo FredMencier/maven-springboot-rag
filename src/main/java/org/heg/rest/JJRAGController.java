@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 
 @RestController
 public class JJRAGController {
@@ -22,7 +23,7 @@ public class JJRAGController {
     }
 
     @PostMapping(path = "/JudoJourney/ask", produces = "application/json")
-    public TechniquesResponse comnposeAnswer(@RequestBody String query) {
+    public Flux<String> comnposeAnswer(@RequestBody String query) {
         if (query == null || query.isEmpty()) {
             LOG.error("Query is empty");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Query is empty");

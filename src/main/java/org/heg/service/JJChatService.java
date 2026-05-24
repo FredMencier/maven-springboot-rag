@@ -9,6 +9,7 @@ import org.heg.dto.TechniquesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import static org.heg.ai.Assistant.*;
 
@@ -23,7 +24,7 @@ public class JJChatService {
         this.contentRetriever = contentRetriever;
     }
 
-    public TechniquesResponse composeAnswer(String query) {
+    public Flux<String> composeAnswer(String query) {
 
         ChatModel chatModel = OpenAiChatModel.builder()
                 .apiKey(API_KEY)
@@ -45,9 +46,6 @@ public class JJChatService {
 
         // Send a prompt
         LOG.info("💬: %s".formatted(query));
-        TechniquesResponse techniquesResponse = assistant.chat(query);
 
-        LOG.info("🤖: %s".formatted(techniquesResponse.toString()));
-        return techniquesResponse;
     }
 }
