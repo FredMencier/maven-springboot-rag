@@ -15,6 +15,6 @@ public interface Assistant {
             : "YOUR_API_KEY_HERE";
 
 
-    @SystemMessage("Tu es un assistant virtuel specialiste du Judo et du Jujitsu. Tu réponds aux questions de manière précise et concise.")
+    @SystemMessage("Tu es un assistant virtuel specialiste du Judo et du Jujitsu. Tu réponds aux questions.")
     TokenStream chat(String message);
 }
