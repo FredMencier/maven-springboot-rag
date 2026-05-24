@@ -23,7 +23,7 @@ public class JJChatService {
         this.contentRetriever = contentRetriever;
     }
 
-    public void composeAnswer(String query) {
+    public TechniquesResponse composeAnswer(String query) {
 
         ChatModel chatModel = OpenAiChatModel.builder()
                 .apiKey(API_KEY)
@@ -35,15 +35,11 @@ public class JJChatService {
                 .logResponses(false)
                 .build();
 
-        // Create the memory store "in memory"
-        //ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
-
         // Build the chatbot thanks to the AIService builder
         // The chatbot must be in streaming mode with memory and RAC activated with the
         // previous contentRetriever
         Assistant assistant = AiServices.builder(Assistant.class)
                 .chatModel(chatModel)
-                //.chatMemory(chatMemory)
                 .contentRetriever(contentRetriever)
                 .build();
 
@@ -52,5 +48,6 @@ public class JJChatService {
         TechniquesResponse techniquesResponse = assistant.chat(query);
 
         LOG.info("🤖: %s".formatted(techniquesResponse.toString()));
+        return techniquesResponse;
     }
 }

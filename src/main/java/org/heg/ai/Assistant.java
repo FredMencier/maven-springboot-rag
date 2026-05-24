@@ -6,7 +6,7 @@ import org.heg.dto.TechniquesResponse;
 public interface Assistant {
 
     String CHAT_MODEL_NAME = "claude-sonnet-4.6";
-    String FREE_CHAT_MODEL_NAME = "nemotron-3-super-120b-a12b:free";
+    String FREE_CHAT_MODEL_NAME = "nemotron-3-nano-omni-30b-a3b-reasoning:free";
     String RAG_MODEL_NAME = "text-embedding-3-small";
     String URL = "https://api.kilo.ai/api/gateway/";
 

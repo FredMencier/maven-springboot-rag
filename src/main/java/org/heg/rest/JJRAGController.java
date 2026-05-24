@@ -1,5 +1,6 @@
 package org.heg.rest;
 
+import org.heg.dto.TechniquesResponse;
 import org.heg.service.JJChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +22,13 @@ public class JJRAGController {
     }
 
     @PostMapping(path = "/JudoJourney/ask", produces = "application/json")
-    public void comnposeAnswer(@RequestBody String query) {
+    public TechniquesResponse comnposeAnswer(@RequestBody String query) {
         if (query == null || query.isEmpty()) {
             LOG.error("Query is empty");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Query is empty");
         }
         try {
-            JJChatService.composeAnswer(query);
+            return JJChatService.composeAnswer(query);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
