@@ -1,7 +1,7 @@
 package org.heg.ai;
 
 import dev.langchain4j.service.SystemMessage;
-import org.heg.dto.TechniquesResponse;
+import dev.langchain4j.service.TokenStream;
 
 public interface Assistant {
 
@@ -16,5 +16,5 @@ public interface Assistant {
 
 
     @SystemMessage("Tu es un assistant virtuel specialiste du Judo et du Jujitsu. Tu réponds aux questions.")
-    TechniquesResponse chat(String message);
+    TokenStream chat(String message);
 }

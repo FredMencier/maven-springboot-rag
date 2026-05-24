@@ -1,11 +1,11 @@
 package org.heg.service;
 
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.TokenStream;
 import org.heg.ai.Assistant;
-import org.heg.dto.TechniquesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class JJChatService {
 
     public Flux<String> composeAnswer(String query) {
 
-        ChatModel chatModel = OpenAiChatModel.builder()
+        StreamingChatModel streamingChatModel = OpenAiStreamingChatModel.builder()
                 .apiKey(API_KEY)
                 .modelName(FREE_CHAT_MODEL_NAME)
                 .baseUrl(URL)
@@ -40,12 +40,26 @@ public class JJChatService {
         // The chatbot must be in streaming mode with memory and RAC activated with the
         // previous contentRetriever
         Assistant assistant = AiServices.builder(Assistant.class)
-                .chatModel(chatModel)
+                .streamingChatModel(streamingChatModel)
                 .contentRetriever(contentRetriever)
                 .build();
 
         // Send a prompt
         LOG.info("💬: %s".formatted(query));
+
+        TokenStream tokenStream = assistant.chat(query);
+
+        LOG.info("🤖: Response en cours...");
+        return Flux.create(emitter -> {
+            tokenStream
+                    .onCompleteResponse(response -> {
+                        emitter.complete();
+                        LOG.info("🤖: Response done");
+                    })
+                    .onPartialResponse(emitter::next)
+                    .onError(emitter::error)
+                    .start();
+        });
 
     }
 }
