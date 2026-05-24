@@ -8,11 +8,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
-public class SpringJJRagApplication {
+public class SpringChatApplication {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpringJJRagApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SpringChatApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringJJRagApplication.class, args);
+        SpringApplication.run(SpringChatApplication.class, args);
     }
 }

@@ -1,0 +1,7 @@
+POST http://localhost:8080/chat/ask
+Accept: text/event-stream
+Content-Type: text/plain
+
+Peux tu me raconter une blague de developpeur java ?
+
+###

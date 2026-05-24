@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JJ Chatbot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h1 span.icon { font-size: 2rem; }
+
+    .chat-wrapper {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* ── conversation history ── */
+    #history {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .bubble {
+      padding: 0.85rem 1.1rem;
+      border-radius: 12px;
+      line-height: 1.6;
+      max-width: 90%;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .bubble.user {
+      background: #1e3a5f;
+      border: 1px solid #2563eb;
+      align-self: flex-end;
+      color: #bae6fd;
+    }
+
+    .bubble.assistant {
+      background: #1e293b;
+      border: 1px solid #334155;
+      align-self: flex-start;
+      color: #e2e8f0;
+    }
+
+    .bubble.assistant.streaming::after {
+      content: '▍';
+      display: inline-block;
+      animation: blink 0.7s step-end infinite;
+      color: #7dd3fc;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── input area ── */
+    .input-area {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 0.6rem 0.75rem;
+    }
+
+    #question {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e2e8f0;
+      font-size: 1rem;
+      resize: none;
+      min-height: 2.5rem;
+      max-height: 10rem;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+
+    #question::placeholder { color: #64748b; }
+
+    #send-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    #send-btn:hover:not(:disabled) { background: #1d4ed8; }
+    #send-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+    /* ── status bar ── */
+    #status {
+      font-size: 0.8rem;
+      color: #64748b;
+      min-height: 1.2em;
+      text-align: right;
+    }
+
+    #status.error { color: #f87171; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="icon">🤖</span>The Napoléon Chatbot</h1>
+
+  <div class="chat-wrapper">
+    <div id="history"></div>
+
+    <div class="input-area">
+      <textarea
+        id="question"
+        rows="1"
+        placeholder="Posez votre question…"
+        autofocus
+      ></textarea>
+      <button id="send-btn" onclick="sendQuestion()">Envoyer</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const historyEl  = document.getElementById('history');
+    const questionEl = document.getElementById('question');
+    const sendBtn    = document.getElementById('send-btn');
+    const statusEl   = document.getElementById('status');
+
+    /* Auto-resize textarea */
+    questionEl.addEventListener('input', () => {
+      questionEl.style.height = 'auto';
+      questionEl.style.height = Math.min(questionEl.scrollHeight, 160) + 'px';
+    });
+
+    /* Send on Ctrl+Enter or Cmd+Enter */
+    questionEl.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') sendQuestion();
+    });
+
+    function addBubble(role, text = '') {
+      const div = document.createElement('div');
+      div.className = `bubble ${role}`;
+      div.textContent = text;
+      historyEl.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      return div;
+    }
+
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.className = isError ? 'error' : '';
+    }
+
+    async function sendQuestion() {
+      const query = questionEl.value.trim();
+      if (!query) return;
+
+      /* Lock UI */
+      sendBtn.disabled = true;
+      questionEl.disabled = true;
+      setStatus('En cours…');
+
+      /* Show user bubble */
+      addBubble('user', query);
+
+      /* Reset textarea */
+      questionEl.value = '';
+      questionEl.style.height = 'auto';
+
+      /* Create assistant bubble (streaming) */
+      const assistantBubble = addBubble('assistant', '');
+      assistantBubble.classList.add('streaming');
+
+      try {
+        const response = await fetch('/chat/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: query
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errText}`);
+        }
+
+        const reader  = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          /*
+           * SSE format: each chunk is one or more lines like
+           *   data: <token>\n\n
+           * We strip the "data: " prefix and display the content.
+           */
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // keep any incomplete line
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const token = line.slice(5); // remove "data:"
+              assistantBubble.textContent += token;
+            } else if (line.trim() !== '') {
+              // Raw token (no SSE envelope) – append directly
+              assistantBubble.textContent += line;
+            }
+          }
+
+          assistantBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        /* Flush any remaining buffer */
+        if (buffer.trim()) {
+          if (buffer.startsWith('data:')) {
+            assistantBubble.textContent += buffer.slice(5);
+          } else {
+            assistantBubble.textContent += buffer;
+          }
+        }
+
+        assistantBubble.classList.remove('streaming');
+        setStatus('');
+      } catch (err) {
+        assistantBubble.classList.remove('streaming');
+        assistantBubble.textContent = assistantBubble.textContent || '⚠️ Erreur lors de la récupération de la réponse.';
+        setStatus(err.message, true);
+        console.error(err);
+      } finally {
+        sendBtn.disabled = false;
+        questionEl.disabled = false;
+        questionEl.focus();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,13 +1,12 @@
 package org.heg.ai;
 
 import dev.langchain4j.service.SystemMessage;
-import org.heg.dto.TechniquesResponse;
+import dev.langchain4j.service.TokenStream;
 
 public interface Assistant {
 
     String CHAT_MODEL_NAME = "claude-sonnet-4.6";
-    String FREE_CHAT_MODEL_NAME = "nemotron-3-super-120b-a12b:free";
-    String RAG_MODEL_NAME = "text-embedding-3-small";
+    String FREE_CHAT_MODEL_NAME_NEMOTRON = "nemotron-3-nano-omni-30b-a3b-reasoning:free";
     String URL = "https://api.kilo.ai/api/gateway/";
 
     String API_KEY = System.getenv("API_KEY") != null
@@ -15,6 +14,6 @@ public interface Assistant {
             : "YOUR_API_KEY_HERE";
 
 
-    @SystemMessage("Tu es un assistant virtuel specialiste du Judo et du Jujitsu. Tu réponds aux questions.")
-    TechniquesResponse chat(String message);
+    @SystemMessage("Tu réponds aux questions en francais en parlant comme Napoleon.")
+    TokenStream chat(String message);
 }

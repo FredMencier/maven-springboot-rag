@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>org.heg</groupId>
-    <artifactId>jj-rag</artifactId>
+    <artifactId>chatbot-application</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -20,6 +20,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
+        <encoding>UTF-8</encoding>
 
         <springdoc-openapi-starter-webmvc-ui.version>2.8.6</springdoc-openapi-starter-webmvc-ui.version>
         <langchain4j.version>1.11.0</langchain4j.version>
@@ -31,7 +32,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
         <dependency>
