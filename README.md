@@ -1,9 +1,11 @@
-# Streaming Chatbot Application
-## Streaming Chatbot
+# Streaming Napoléon Chatbot Application
+## Streaming Napoléon Chatbot
 
 Cette application de test est un chatbot conçu pour démontrer les capacités de streaming en temps réel des réponses générées par un modèle de langage à grande échelle (LLM). Elle permet aux utilisateurs d'interagir avec un système d'intelligence artificielle conversationnelle où les réponses sont transmises mot par mot, créant une expérience fluide et réactive similaire à celle des assistants virtuels modernes.
 
 Contrairement aux chatbots traditionnels qui attendent la génération complète d'une réponse avant de l'afficher, cette application utilise le streaming HTTP pour afficher chaque token dès qu'il est produit par le modèle de langage. Cela réduit considérablement la latence perçue et améliore l'engagement utilisateur, particulièrement pour les réponses longues.
+
+L'application répond aux questions en se faisant passer pour Napoléon, offrant ainsi une expérience immersive et divertissante. Les utilisateurs peuvent poser des questions sur l'histoire, les stratégies militaires, ou même des anecdotes personnelles de Napoléon, et recevoir des réponses en temps réel qui reflètent le style et la personnalité de ce célèbre personnage historique.
 
 ## Description technique de l'application
 
