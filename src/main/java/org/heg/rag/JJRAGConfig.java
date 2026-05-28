@@ -12,6 +12,7 @@ import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import org.heg.service.JJChatService;
 import org.slf4j.Logger;
@@ -29,17 +30,19 @@ import static org.heg.ai.Assistant.*;
 @Configuration
 public class JJRAGConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JJChatService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JJRAGConfig.class);
+
+    //https://github.com/devrel-workshop/ai-as-lib-workshop/blob/main/solutions/chatbot/java/java-langchain4j/ImageGenerationMCPChatbot.java
 
     @Bean
     public ContentRetriever computeRAG() {
         long startRagCompute = System.currentTimeMillis();
+
         // Load the document and split it into chunks
-        DocumentParser documentParser = new TextDocumentParser();
         Path p = Paths.get("src/main/resources/techniques.md").toAbsolutePath();
 
-        Document document = loadDocument(p.toString(), documentParser);
-        DocumentSplitter splitter = DocumentSplitters.recursive(8000, 50);
+        Document document = loadDocument(p.toString());
+        DocumentSplitter splitter = DocumentSplitters.recursive(500, 50);
 
         List<TextSegment> segments = splitter.split(document);
 
