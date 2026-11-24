@@ -76,8 +76,8 @@ public class JJRAGConfig {
         EmbeddingStoreContentRetriever embeddingStoreContentRetriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embeddingStore)
                 .embeddingModel(embeddingModel)
-                .maxResults(3)
-                .minScore(0.80)
+                .maxResults(5)
+                .minScore(0.65)
                 .build();
 
         LOG.info("RAG compute in %s seconds".formatted((System.currentTimeMillis() - startRagCompute) / 1000));
