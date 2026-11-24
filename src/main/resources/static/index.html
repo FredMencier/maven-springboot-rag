@@ -66,7 +66,46 @@
       border: 1px solid #334155;
       align-self: flex-start;
       color: #e2e8f0;
+      white-space: normal;
     }
+
+    .bubble.assistant h1,
+    .bubble.assistant h2,
+    .bubble.assistant h3 {
+      display: block;
+      color: #bae6fd;
+      line-height: 1.3;
+      margin: 0.65rem 0 0.35rem;
+    }
+
+    .bubble.assistant ul,
+    .bubble.assistant ol {
+      padding-left: 1.4rem;
+    }
+
+    .bubble.assistant pre {
+      background: #0f172a;
+      border-radius: 6px;
+      overflow-x: auto;
+      padding: 0.75rem;
+    }
+
+    .bubble.assistant :not(pre) > code {
+      background: #0f172a;
+      border-radius: 4px;
+      color: #bae6fd;
+      padding: 0.1rem 0.3rem;
+    }
+
+    .answer-sources {
+      border-top: 1px solid #334155;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.9rem;
+      padding-top: 0.6rem;
+    }
+
+    .answer-sources ul { padding-left: 1.2rem; }
 
     .bubble.assistant.streaming::after {
       content: '▍';
@@ -203,9 +242,9 @@
       assistantBubble.classList.add('streaming');
 
       try {
-        const response = await fetch('/JudoJourney/ask', {
+        const response = await fetch('/JudoJourney/ask/sync', {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain', 'Accept': 'application/json' },
           body: query
         });
 
@@ -214,45 +253,29 @@
           throw new Error(`HTTP ${response.status}: ${errText}`);
         }
 
-        const reader  = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
-        let buffer = '';
+        const { answerHtml, sources } = await response.json();
+        assistantBubble.innerHTML = answerHtml;
 
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
+        const sourcesSection = document.createElement('section');
+        sourcesSection.className = 'answer-sources';
+        const sourcesTitle = document.createElement('strong');
+        sourcesTitle.textContent = 'Sources récupérées';
+        sourcesSection.appendChild(sourcesTitle);
 
-          buffer += decoder.decode(value, { stream: true });
-
-          /*
-           * SSE format: each chunk is one or more lines like
-           *   data: <token>\n\n
-           * We strip the "data: " prefix and display the content.
-           */
-          const lines = buffer.split('\n');
-          buffer = lines.pop(); // keep any incomplete line
-
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
-              const token = line.slice(5); // remove "data:"
-              assistantBubble.textContent += token;
-            } else if (line.trim() !== '') {
-              // Raw token (no SSE envelope) – append directly
-              assistantBubble.textContent += line;
-            }
-          }
-
-          assistantBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        if (sources.length > 0) {
+          const sourcesList = document.createElement('ul');
+          sources.forEach(source => {
+            const item = document.createElement('li');
+            item.textContent = source;
+            sourcesList.appendChild(item);
+          });
+          sourcesSection.appendChild(sourcesList);
+        } else {
+          const noSources = document.createElement('p');
+          noSources.textContent = 'Aucune source documentaire récupérée.';
+          sourcesSection.appendChild(noSources);
         }
-
-        /* Flush any remaining buffer */
-        if (buffer.trim()) {
-          if (buffer.startsWith('data:')) {
-            assistantBubble.textContent += buffer.slice(5);
-          } else {
-            assistantBubble.textContent += buffer;
-          }
-        }
+        assistantBubble.appendChild(sourcesSection);
 
         assistantBubble.classList.remove('streaming');
         setStatus('');
